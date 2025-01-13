@@ -31,46 +31,68 @@ const doctorList = async (req, res) => {
 
 // Creating an Api for Doctor Login
 
-const doctorLoginHandler = async(req, res) => {
+const doctorLoginHandler = async (req, res) => {
   try {
-    const {email, password} = req.body;
-    const doctor = await doctorModel.findOne({email});
+    const { email, password } = req.body;
+    const doctor = await doctorModel.findOne({ email });
     // Checking if The doctor is available or not
     if (!doctor) {
-      return res.status(404).json({success: false, message: "Doctor not found"});
+      return res
+        .status(404)
+        .json({ success: false, message: "Doctor not found" });
     }
 
     const isMatch = await bcrypt.compare(password, doctor.password);
-    if(isMatch) {
-      const token = jwt.sign({id:doctor._id}, process.env.JWT_SECRET);
-      return res.status(200).json({success: true, message: "Login Successful", token, doctor});
-    } else  {
-      return res.status(401).json({success: false, message: "Invalid Credentials"});
+    if (isMatch) {
+      const token = jwt.sign({ id: doctor._id }, process.env.JWT_SECRET);
+      return res
+        .status(200)
+        .json({ success: true, message: "Login Successful", token, doctor });
+    } else {
+      return res
+        .status(401)
+        .json({ success: false, message: "Invalid Credentials" });
     }
-
-
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: error.message });  
+    res.status(500).json({ message: error.message });
   }
 };
 
 // Creating an Api to get Doctor Appointments for Doctor Panel
 
-const doctorAppointments = async(req, res) => {
+const doctorAppointments = async (req, res) => {
   try {
-    
-    const {docId} = req.body;
+    const { docId } = req.body;
     const appointments = await appointmentModel.find({ docId });
-    res.status(200).json({ success: true, appointments }); 
+    res.status(200).json({ success: true, appointments });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: error.message });
+  }
+};
 
+// API to mark the appointment completed for doctor panel
+
+const completedAppointments = async (req, res) => {
+  try {
+
+    const {docId, appointmentId} = req.body;
+    const appointmentData = await appointmentModel.findById(appointmentId);
+    if(appointmentData && appointmentData.docId === docId ) {
+      await appointmentModel.findByIdAndUpdate(appointmentId, {isCompleted: true});
+      res.status(200).json({success: true, message: "Appointment Completed Successfully"});
+    }
 
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: error.message });
-    
   }
-}
+};
 
-
-export { changeAvailability, doctorList, doctorLoginHandler, doctorAppointments };
+export {
+  changeAvailability,
+  doctorList,
+  doctorLoginHandler,
+  doctorAppointments,
+};
