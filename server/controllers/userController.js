@@ -48,7 +48,7 @@ const registeringUser = async (req, res) => {
     const user = await newUser.save();
 
     // Creating the token
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+    const token = jwt.sign({ id:user._id }, process.env.JWT_SECRET);
     res.status(201).json({
       success: "true",
       token,

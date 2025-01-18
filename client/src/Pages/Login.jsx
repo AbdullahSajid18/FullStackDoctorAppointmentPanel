@@ -13,7 +13,7 @@ const Login = () => {
   const [state, setState] = useState("Sign Up");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [username, setUsername] = useState("");
+  const [name, setName] = useState("");
 
   const onSubmitHandler = async (event) => {
     event.preventDefault();
@@ -41,7 +41,7 @@ const Login = () => {
       
     } catch (error) {
       console.log(error);
-      toast.error(error.message);
+      toast.error(error.response?.data?.message);
       
     }
   };
@@ -69,8 +69,8 @@ const Login = () => {
           <input
             className="w-full p-2 mt-1 border rounded border-zinc-300"
             type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
             required
           />
         </div>
