@@ -5,62 +5,85 @@ import axios from "axios";
 export const DoctorContext = createContext();
 
 const DoctorContextProvider = (props) => {
-
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
-  const [dToken, setDToken] = useState(localStorage.getItem("dToken") ? localStorage.getItem("dToken") : '');
+  const [dToken, setDToken] = useState(
+    localStorage.getItem("dToken") ? localStorage.getItem("dToken") : ""
+  );
   const [appointments, setAppointments] = useState([]);
-
 
   const getAllAppointments = async () => {
     try {
-      const {data} = await axios.get(`${backendUrl}/api/doctor/appointments`, {headers: { dToken }});
+      const { data } = await axios.get(
+        `${backendUrl}/api/doctor/appointments`,
+        { headers: { dToken } }
+      );
       if (data.success) {
         setAppointments(data.appointments.reverse());
         console.log(data.appointments.reverse());
-        
-      }else {
+      } else {
         toast.error(data.message);
       }
-      
-
     } catch (error) {
       console.log(error);
-      
+
       toast.error(error.response?.data?.message);
-      
+    }
+  };
+
+  const completedAppointment = async (appointmentId) => {
+    try {
+      const { data } = await axios.post(
+        `${backendUrl}/api/doctor/complete-appointment`,
+        { appointmentId },
+        { headers: { dToken } }
+      );
+      if (data.success) {
+        toast.success(data.message);
+        getAllAppointments();
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response?.data?.message);
     }
   };
 
 
-  const completedAppointment = async (appointmentId) => {
-
+  const cancelledAppointment = async (appointmentId) => {
     try {
-      const {data} = await axios.post(`${backendUrl}/api/doctor/complete-appointment`, {appointmentId}, {headers: {dToken}} )
-      if (data.success)  {
+      const { data } = await axios.post(
+        `${backendUrl}/api/doctor/cancel-appointment`,
+        { appointmentId },
+        { headers: { dToken } }
+      );
+      if (data.success) {
         toast.success(data.message);
-        getAllAppointments()
+        getAllAppointments();
       } else {
         toast.error(data.message);
       }
-
     } catch (error) {
       console.log(error);
       toast.error(error.response?.data?.message);
     }
-
   };
 
   const value = {
     dToken,
     setDToken,
-    backendUrl, 
+    backendUrl,
     appointments,
     setAppointments,
-    getAllAppointments
+    getAllAppointments,
+    completedAppointment,
+    cancelledAppointment,
   };
 
   return (
-    <DoctorContext.Provider value={value}>{props.children}</DoctorContext.Provider>
+    <DoctorContext.Provider value={value}>
+      {props.children}
+    </DoctorContext.Provider>
   );
 };
 

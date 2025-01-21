@@ -115,6 +115,30 @@ const cancelledAppointments = async (req, res) => {
   }
 };
 
+// API to get doctor data for dashboard in doctor panel
+
+const doctorsDashboardData = async (req, res) => {
+  try {
+    const {docId} = req.body;
+    const appointments = await appointmentModel.find({docId});
+
+    // Initializing Earnings
+    let earnings = 0;
+    appointments.map((item)=>{
+      if(item.isCompleted || item.payment){
+        earnings += item.amount;
+      }
+    })
+
+    // Initializing No of Patients
+    let patients = [];
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: error.message });
+  }
+}
+
 export {
   changeAvailability,
   doctorList,
