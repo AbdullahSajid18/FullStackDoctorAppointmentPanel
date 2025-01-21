@@ -52,7 +52,6 @@ const DoctorAppointments = () => {
                     <img onClick={()=> completedAppointment(item._id)} className="w-10 cursor-pointer" src={assets.tick_icon} alt="" />
                   </div>
               }
-              
             </div>
           ))
         }

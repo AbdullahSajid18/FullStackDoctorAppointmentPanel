@@ -128,10 +128,54 @@ const doctorsDashboardData = async (req, res) => {
       if(item.isCompleted || item.payment){
         earnings += item.amount;
       }
-    })
+    });
 
     // Initializing No of Patients
     let patients = [];
+    appointments.map((item)=>{
+      if(!patients.includes(item.userId)){
+        patients.push(item.userId);
+      }
+    });
+
+    const dashboardData = {
+      earnings,
+      appointments: appointments.length,
+      patients: patients.length,
+      latestAppointments: appointments.reverse().slice(0,5)
+    };
+    res.status(200).json({success: true, dashboardData});
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: error.message });
+  }
+}
+
+// API to get doctor data for profile
+
+const doctorProfileData = async (req, res) => {
+  try {
+    
+    const {docId} = req.body;
+    const profileData = await doctorModel.findById(docId).select(["-password"]);
+
+    res.status(200).json({success: true, profileData});
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: error.message });
+    
+  }
+}
+
+// API to update doctor profile
+const updateDoctorProfile = async (req, res) => {
+  try {
+    
+    const {docId, address, fees, available} = req.body;
+    await doctorModel.findByIdAndUpdate(docId, {address, fees, available});
+    res.status(200).json({success: true, message: "Profile Updated Successfully"});
 
   } catch (error) {
     console.log(error);
@@ -145,5 +189,9 @@ export {
   doctorLoginHandler,
   doctorAppointments,
   completedAppointments,
-  cancelledAppointments
+  cancelledAppointments,
+  doctorsDashboardData,
+  doctorProfileData,
+  updateDoctorProfile,
+ 
 };
