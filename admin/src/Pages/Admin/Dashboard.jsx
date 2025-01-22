@@ -4,8 +4,9 @@ import { assets } from "../../assets/assets";
 import { AppContext } from "../../Context/AppContext";
 
 const Dashboard = () => {
-  const { aToken, getDashboardData, appointmentCancellation, dashboardData } = useContext(AdminContext);
-  const {slotDateFormat} = useContext(AppContext);
+  const { aToken, getDashboardData, appointmentCancellation, dashboardData } =
+    useContext(AdminContext);
+  const { slotDateFormat } = useContext(AppContext);
 
   useEffect(() => {
     if (aToken) {
@@ -55,14 +56,29 @@ const Dashboard = () => {
 
           <div className="pt-4 border-t-0">
             {dashboardData.latestAppointments.map((item, index) => (
-              <div className="flex items-center gap-3 px-6 py-3 hover:bg-gray-100" key={index}>
-                <img className="w-10 rounded-full" src={item.doctorData.image} alt="" />
+              <div
+                className="flex items-center gap-3 px-6 py-3 hover:bg-gray-100"
+                key={index}
+              >
+                <img
+                  className="w-10 rounded-full"
+                  src={item.doctorData.image}
+                  alt=""
+                />
                 <div className="flex-1 text-sm">
-                  <p className="font-medium text-gtay-800">{item.doctorData.name}</p>
-                  <p className="text-gtay-600">{slotDateFormat(item.slotDate)}</p>
+                  <p className="font-medium text-gtay-800">
+                    {item.doctorData.name}
+                  </p>
+                  <p className="text-gtay-600">
+                    {slotDateFormat(item.slotDate)}
+                  </p>
                 </div>
                 {item.cancelled ? (
                   <p className="text-xs font-medium text-red-400">Cancelled</p>
+                ) : item.isCompleted ? (
+                  <p className="text-xs font-medium text-green-500">
+                    Completed
+                  </p>
                 ) : (
                   <img
                     onClick={() => appointmentCancellation(item._id)}
